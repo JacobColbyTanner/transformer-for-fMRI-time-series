@@ -1,0 +1,21 @@
+#!/bin/bash
+
+#SBATCH -J RNN_loss_landscape
+#SBATCH -p general
+#SBATCH -A r00639
+#SBATCH -o %j_output.txt
+#SBATCH -e %j_errors.err
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=jctanner@iu.edu
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --time=0-12:00:00
+#SBATCH --mem=200G
+#SBATCH --cpus-per-task=5
+
+
+#Load any modules that your program needs
+module load python/gpu/3.10.10
+
+#Run your program
+srun python main_annotations.py
