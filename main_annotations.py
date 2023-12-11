@@ -13,10 +13,10 @@ from scipy.io import loadmat
 # Hyperparameters
 #scan = 0
 use_features = True
-supercomputer = False
-batch_size = 250
+supercomputer = True
+batch_size = 300
 sequence_length = 5
-num_iter = 10
+num_iter = 20
 learning_rate = 0.00001
 epochs = 1000
 
@@ -25,7 +25,7 @@ ntokens = 200  # fMRI 'vocabulary' size (e.g., number of distinct brain regions 
 emsize = 2000    # embedding dimension
 nhid = 2000      # the dimension of the feedforward network model in nn.TransformerEncoder
 nlayers = 5     # the number of nn.TransformerEncoderLayer in nn.TransformerEncoder
-nhead = 4       # the number of heads in the multiheadattention models
+nhead = 20     # the number of heads in the multiheadattention models
 if use_features == True:
     out_size = 45
 else:
@@ -58,10 +58,11 @@ def weighted_binary_cross_entropy(output, target, weights=None):
 if supercomputer == True:
     data = loadmat('/N/project/networkRNNs/schaefer200_HCP7t_movie_rest_struct.mat')
     path = "/N/project/networkRNNs/HCP_movie_stimulus/annotations.mat"
+    features = np.load("/N/project/networkRNNs/HCP_movie_stimulus/features.npy", allow_pickle = True).item()
 else:
     data = loadmat('/Users/jacobtanner/Brain networks lab Dropbox/Jacob Tanner/jacobcolbytanner/schaefer200_HCP7t_movie_rest_struct.mat')
     path = "/Users/jacobtanner/Brain networks lab Dropbox/bnbl_main/data/hcp_7tmovi/annotations/annotations.mat"
-
+    features = np.load("/Users/jacobtanner/Desktop/transformer-for-fMRI-time-series_local/data/features.npy", allow_pickle = True).item()
 it = data['HCP_7t_movie_rest']
 
 
@@ -69,7 +70,7 @@ it = data['HCP_7t_movie_rest']
 
 A_data = loadmat(path)
 
-features = np.load("data/features.npy", allow_pickle = True).item()
+
 
 print(features[0])
 

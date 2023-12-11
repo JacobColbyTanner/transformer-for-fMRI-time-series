@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH -J RNN_loss_landscape
+#SBATCH -J transformer_for_fMRI
 #SBATCH -p general
 #SBATCH -A r00639
 #SBATCH -o %j_output.txt
@@ -9,7 +9,7 @@
 #SBATCH --mail-user=jctanner@iu.edu
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --time=0-12:00:00
+#SBATCH --time=0-48:00:00
 #SBATCH --mem=200G
 #SBATCH --cpus-per-task=5
 
