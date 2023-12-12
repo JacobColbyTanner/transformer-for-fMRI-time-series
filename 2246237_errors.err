@@ -1,0 +1,4 @@
+/N/soft/sles15/deeplearning/Python-3.10.10/lib/python3.10/site-packages/numpy/lib/function_base.py:2853: RuntimeWarning: invalid value encountered in divide
+  c /= stddev[:, None]
+/N/soft/sles15/deeplearning/Python-3.10.10/lib/python3.10/site-packages/numpy/lib/function_base.py:2854: RuntimeWarning: invalid value encountered in divide
+  c /= stddev[None, :]

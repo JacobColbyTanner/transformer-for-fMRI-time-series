@@ -1,0 +1,6 @@
+  File "/geode2/home/u040/jctanner/BigRed200/transformer-for-fMRI-time-series/main_annotations.py", line 68
+    it = data["all_ts"]
+    ^
+IndentationError: expected an indented block after 'else' statement on line 64
+srun: error: nid0239: task 0: Exited with exit code 1
+srun: launch/slurm: _step_signal: Terminating StepId=2251815.0

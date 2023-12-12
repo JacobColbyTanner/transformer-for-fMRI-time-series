@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/geode2/home/u040/jctanner/BigRed200/transformer-for-fMRI-time-series/main_annotations.py", line 178, in <module>
+    inputs, targets = get_batch(it, features, sequence_length, batch_size,ntokens,out_size)
+  File "/geode2/home/u040/jctanner/BigRed200/transformer-for-fMRI-time-series/main_annotations.py", line 144, in get_batch
+    inputs[:,i,:] = ts[start:stop,:]
+RuntimeError: The expanded size of the tensor (1000) must match the existing size (1053) at non-singleton dimension 1.  Target sizes: [5, 1000].  Tensor sizes: [5, 1053]
+srun: error: nid0096: task 0: Exited with exit code 1
+srun: launch/slurm: _step_signal: Terminating StepId=2252705.0

@@ -14,14 +14,17 @@ from scipy.io import loadmat
 #scan = 0
 use_features = True
 supercomputer = True
+parc_1000 = True
 batch_size = 300
 sequence_length = 5
 num_iter = 20
 learning_rate = 0.00001
 epochs = 1000
 
-
-ntokens = 200  # fMRI 'vocabulary' size (e.g., number of distinct brain regions or features)
+if parc_1000:
+   ntokens = 1000
+else: 
+    ntokens = 200  # fMRI 'vocabulary' size (e.g., number of distinct brain regions or features)
 emsize = 2000    # embedding dimension
 nhid = 2000      # the dimension of the feedforward network model in nn.TransformerEncoder
 nlayers = 5     # the number of nn.TransformerEncoderLayer in nn.TransformerEncoder
@@ -53,17 +56,36 @@ def weighted_binary_cross_entropy(output, target, weights=None):
     
     return torch.neg(torch.mean(loss))
 
+if parc_1000 == True:
 
-# open data
-if supercomputer == True:
-    data = loadmat('/N/project/networkRNNs/schaefer200_HCP7t_movie_rest_struct.mat')
-    path = "/N/project/networkRNNs/HCP_movie_stimulus/annotations.mat"
-    features = np.load("/N/project/networkRNNs/HCP_movie_stimulus/features.npy", allow_pickle = True).item()
+    # open data
+    if supercomputer == True:
+        data = loadmat('/N/project/networkRNNs/HCP_movie_stimulus/HCP7t_1000_all_ts.mat')
+        path = "/N/project/networkRNNs/HCP_movie_stimulus/annotations.mat"
+        features = np.load("/N/project/networkRNNs/HCP_movie_stimulus/features.npy", allow_pickle = True).item()
+        it = data["all_ts"]
+    else:
+        #data = loadmat('/Users/jacobtanner/Brain networks lab Dropbox/Jacob Tanner/jacobcolbytanner/schaefer200_HCP7t_movie_rest_struct.mat')
+        #path = "/Users/jacobtanner/Brain networks lab Dropbox/bnbl_main/data/hcp_7tmovi/annotations/annotations.mat"
+        #features = np.load("/Users/jacobtanner/Desktop/transformer-for-fMRI-time-series_local/data/features.npy", allow_pickle = True).item()
+        it = data["all_ts"]
+    
+    
 else:
-    data = loadmat('/Users/jacobtanner/Brain networks lab Dropbox/Jacob Tanner/jacobcolbytanner/schaefer200_HCP7t_movie_rest_struct.mat')
-    path = "/Users/jacobtanner/Brain networks lab Dropbox/bnbl_main/data/hcp_7tmovi/annotations/annotations.mat"
-    features = np.load("/Users/jacobtanner/Desktop/transformer-for-fMRI-time-series_local/data/features.npy", allow_pickle = True).item()
-it = data['HCP_7t_movie_rest']
+    # open data
+    if supercomputer == True:
+        data = loadmat('/N/project/networkRNNs/schaefer200_HCP7t_movie_rest_struct.mat')
+        path = "/N/project/networkRNNs/HCP_movie_stimulus/annotations.mat"
+        features = np.load("/N/project/networkRNNs/HCP_movie_stimulus/features.npy", allow_pickle = True).item()
+        it = data['HCP_7t_movie_rest']
+    else:
+        data = loadmat('/Users/jacobtanner/Brain networks lab Dropbox/Jacob Tanner/jacobcolbytanner/schaefer200_HCP7t_movie_rest_struct.mat')
+        path = "/Users/jacobtanner/Brain networks lab Dropbox/bnbl_main/data/hcp_7tmovi/annotations/annotations.mat"
+        features = np.load("/Users/jacobtanner/Desktop/transformer-for-fMRI-time-series_local/data/features.npy", allow_pickle = True).item()
+        it = data['HCP_7t_movie_rest']
+    
+
+
 
 
 
@@ -77,28 +99,45 @@ print(features[0])
 def get_batch(brain_data, target_data, sequence_length, batch_size,ntokens,out_size):
     global use_features
 
+    if parc_1000 == True:
+        top = 50
+    else:
+        top = 129
 
 
     inputs = torch.zeros(sequence_length,batch_size,ntokens)
     targets = torch.zeros(sequence_length,batch_size,out_size)
     for i in range(batch_size):
         if use_features == True:
-            subject = np.random.randint(0,high=129)
+            subject = np.random.randint(0,high=top)
             scan = np.random.randint(0,high=3)
             
-            TT = brain_data[0,subject]
-            ts = torch.from_numpy(TT['movie'][0,scan][0])  #time by nodes
-            
-            A = torch.from_numpy(target_data[scan].T)
-            #print("feature shape: ", A.shape)
-        else:
+            if parc_1000 == True:
+                ts = torch.from_numpy(brain_data[subject,scan])
 
-            subject = np.random.randint(0,high=129)
-            scan = np.random.randint(0,high=3)
-            annot = target_data["feature_matrix"][0,scan]
-            TT = brain_data[0,subject]
-            ts = torch.from_numpy(TT['movie'][0,scan][0])  #time by nodes
-            A = torch.from_numpy(annot.reshape(annot.shape[0], -1))
+                A = torch.from_numpy(target_data[scan].T)
+                #print("feature shape: ", A.shape)
+            else:
+
+                TT = brain_data[0,subject]
+                ts = torch.from_numpy(TT['movie'][0,scan][0])  #time by nodes
+                
+                A = torch.from_numpy(target_data[scan].T)
+                #print("feature shape: ", A.shape)
+        else:
+            if parc_1000 == True:
+                subject = np.random.randint(0,high=top)
+                scan = np.random.randint(0,high=3)
+                annot = target_data["feature_matrix"][0,scan]
+                ts = torch.from_numpy(brain_data[subject,scan])
+                A = torch.from_numpy(annot.reshape(annot.shape[0], -1))
+            else:
+                subject = np.random.randint(0,high=top)
+                scan = np.random.randint(0,high=3)
+                annot = target_data["feature_matrix"][0,scan]
+                TT = brain_data[0,subject]
+                ts = torch.from_numpy(TT['movie'][0,scan][0])  #time by nodes
+                A = torch.from_numpy(annot.reshape(annot.shape[0], -1))
 
         start = np.random.randint(0,high= ts.shape[0]-sequence_length)
         stop = start+sequence_length
